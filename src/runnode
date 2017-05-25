@@ -1,0 +1,5 @@
+#!/bin/sh
+npm install
+#setcap cap_net_raw+eip $(eval readlink -f `which node`)
+#lsmod
+exec sudo node index.js

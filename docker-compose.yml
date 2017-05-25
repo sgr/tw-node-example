@@ -1,0 +1,17 @@
+version: "3"
+services:
+  app:
+    image: tw-node-example-bme280
+    container_name: bme280
+    privileged: true
+    volumes:
+      - /boot/config.txt:/boot/config.txt
+      - /lib/modules:/lib/modules
+#      - /dev:/dev
+      - ./src/runnode:/home/app/runnode
+      - ./src/package.json:/home/app/package.json
+      - ./src/index.js:/home/app/index.js
+      - ./src/bme280.js:/home/app/bme280.js
+      - ./conf:/home/app/conf
+    build:
+      context: .

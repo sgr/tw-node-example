@@ -1,0 +1,16 @@
+{
+  "name": "tw-node-example-bme280",
+  "version": "1.0.0",
+  "description": "An I2C sensor <-> ThingWorx demonstration",
+  "main": "index.js",
+  "author": "Shigeru Fujiwara",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "js-yaml": "^3.8.4",
+    "bluebird": "^3.5.0",
+    "console-stamp": "^0.2.5",
+    "raspi": "^4.0.0",
+    "raspi-i2c": "^5.0.4"
+  },
+  "private": true
+}
