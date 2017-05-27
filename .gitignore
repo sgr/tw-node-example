@@ -1,5 +1,3 @@
-agent
 *.log
 .DS_Store
 conf/config.yml
-Makefile
