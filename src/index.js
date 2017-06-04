@@ -38,15 +38,21 @@ const twConnect = () => {
 const shutdown = sig => {
     console.log("CAUGHT %s, SHUTTING DOWN...", sig);
     Promise.resolve(0)
-        .then(() => api.disconnect(err => {
-            if (err) {
-                console.warn("FAILED TO DISCONNECTED THINGWORX " + err);
-                process.exit(1);
+        .then(() => {
+            if (config && config.enableThingworx) {
+                api.disconnect(err => {
+                    if (err) {
+                        console.warn("FAILED TO DISCONNECTED THINGWORX " + err);
+                        process.exit(1);
+                    } else {
+                        console.log("DISCONNECTED THINGWORX SUCCESSFULLY");
+                        process.exit(0);
+                    }
+                });
             } else {
-                console.log("DISCONNECTED THINGWORX SUCCESSFULLY");
                 process.exit(0);
             }
-        }));
+        });
 };
 
 // main
@@ -59,15 +65,17 @@ Promise.resolve(0)
         console.log('READ CONFIG: %j', config);
         INTERVAL_MSEC = 'interval_msec' in config ? config.interval_msec : INTERVAL_MSEC;
 
-        api = new Api(config.thingworxSettings);
-        api.on('connect', () => console.log("CONNECTED WITH A THINGWORX SERVER"));
-        api.on('disconnect', msg => {
-            console.log('DISCONNECTED: %s', msg);
-            Promise.delay(60 * 1000).then(() => {
-                console.log('RETRY CONNECTING...');
-                twConnect();
+        if (config && config.enableThingworx) {
+            api = new Api(config.thingworxSettings);
+            api.on('connect', () => console.log("CONNECTED WITH A THINGWORX SERVER"));
+            api.on('disconnect', msg => {
+                console.log('DISCONNECTED: %s', msg);
+                Promise.delay(60 * 1000).then(() => {
+                    console.log('RETRY CONNECTING...');
+                    twConnect();
+                });
             });
-        });
+        }
 
         // 設定ファイルから読み込んだセンサータグ情報から ThingWorx の RemoteThing を作成
         // ボタンを押された場合のサービスもここで定義している。

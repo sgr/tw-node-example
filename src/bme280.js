@@ -4,7 +4,8 @@ require('console-stamp')(console, {pattern: "yyyy-mm-dd HH:MM:ss.l"});
 const util = require('util');
 
 const BME280_I2C_ADDR = 0x76;
-const BME280_CMD_SETUP = new Buffer([0xf5, 0xa0, 0xf2, 0x01, 0xf4, 0x23]);
+//const BME280_CMD_SETUP = new Buffer([0xf5, 0xa0, 0xf2, 0x01, 0xf4, 0x23]); // 5.5.2 Humidity sensing
+const BME280_CMD_SETUP = new Buffer([0xf5, 0x10, 0xf2, 0x01, 0xf4, 0x57]); // 5.5.3 Indoor Navigation
 const BME280_CMD_CALIB_PARAM_PT = 0x88;
 const BME280_CMD_CALIB_PARAM_H1 = 0xa1;
 const BME280_CMD_CALIB_PARAM_H2 = 0xe1;
