@@ -5,7 +5,7 @@ BME280_thing_name: BME280_sensor1
 interval_msec: 1000
 
 # ThingWorxへの接続を有効にする。
-enableThingworx: true
+enableThingworx: false
 
 # 以下はThingWorxとの接続設定
 thingworxSettings:
