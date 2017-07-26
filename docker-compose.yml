@@ -13,5 +13,9 @@ services:
       - ./src/index.js:/home/app/index.js
       - ./src/bme280.js:/home/app/bme280.js
       - ./conf:/home/app/conf
+    logging:
+      options:
+        max-size: "200k"
+        max-file: "3"
     build:
       context: .

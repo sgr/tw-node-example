@@ -55,9 +55,26 @@ const shutdown = sig => {
         });
 };
 
+const twConnected = () => {
+    console.log("CONNECTED WITH A THINGWORX SERVER");
+};
+
+const twDisconnected = msg => {
+    console.log('DISCONNECTED: %s, %s', msg, api.isConnected());
+    Promise.delay(5 * 1000).then(() => {
+        console.log('RETRY CONNECTING...');
+        // 旧apiオブジェクトはGCされるようで、作りなおさないとメモリエラーになる
+        api = new Api(config.thingworxSettings);
+        api.on('connect', twConnected);
+        api.on('disconnect', twDisconnected);
+        twConnect();
+    });
+};
+
 // main
 Promise.resolve(0)
     .then(() => { // 初期化
+        process.env.TZ = 'Asia/Tokyo';
         process.on('SIGINT', () => shutdown('SIGINT'));
         process.on('SIGTERM', () => shutdown('SIGTERM'));
 
@@ -67,14 +84,8 @@ Promise.resolve(0)
 
         if (config && config.enableThingworx) {
             api = new Api(config.thingworxSettings);
-            api.on('connect', () => console.log("CONNECTED WITH A THINGWORX SERVER"));
-            api.on('disconnect', msg => {
-                console.log('DISCONNECTED: %s', msg);
-                Promise.delay(60 * 1000).then(() => {
-                    console.log('RETRY CONNECTING...');
-                    twConnect();
-                });
-            });
+            api.on('connect', twConnected);
+            api.on('disconnect', twDisconnected);
         }
 
         // 設定ファイルから読み込んだセンサータグ情報から ThingWorx の RemoteThing を作成
@@ -108,14 +119,18 @@ Promise.resolve(0)
             .then(function loop() {
                 // 計測
                 return bme280.measureAsync()
+                    .catch(err => {
+                        console.warn('READ VALUE ERROR: ' + err);
+                        process.kill(process.pid, 'SIGTERM');
+                    })
                     .then(val => {
-                        console.log('READ VALUES: %j', val);
+                        console.log('VALUES: %j', val);
                         bme280thing.setProperty('temperature', val.temperature);
                         bme280thing.setProperty('humidity', val.humidity);
                         bme280thing.setProperty('pressure', val.pressure);
                     })
                     .catch(err => {
-                        console.warn('READ ERROR: ' + err);
+                        console.warn('WRITE PROPERTIES ERROR: ' + err);
                         process.kill(process.pid, 'SIGTERM');
                     })
                     .delay(INTERVAL_MSEC)

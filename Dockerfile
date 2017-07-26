@@ -10,6 +10,7 @@ RUN set -x \
  && chmod +x $HOME/runnode \
  && update-ca-certificates \
 # for raspi & raspi-i2c
+ && apt-get update \
  && apt-get install -y sudo kmod \
  && npm install
 
